@@ -2,19 +2,37 @@
 
 (in-package #:debug-tools)
 
+(defun print-time-stamp ()
+  "Print a time stamp, return its length."
+  (bind (((:values second minute hour) (get-decoded-time))
+         (string (format nil "~2,'0d:~2,'0d:~2,'0d " hour minute second)))
+    (format *error-output* string)
+    (length string)))
+
+(defun print-spacer (length)
+  "Print LENGH spaces."
+  (loop repeat length do (princ #\space *error-output*)))
+
 (defun d (control-string &rest arguments)
   "Print formatted arguments, preceded by a timestamp.  A closing
 newline is appended."
-  (bind ((output *error-output*)
-         ((:values second minute hour) (get-decoded-time)))
-    (format output "~2,'0d:~2,'0d:~2,'0d " hour minute second)
+  (bind ((output *error-output*))
+    (print-time-stamp)
     (apply #'format *error-output* control-string arguments)
     (format *error-output* "~&")))
 
 (defmacro v (&rest forms)
-  "Print formatted form=value pairs (usind D)."
-  (let ((control-string (format nil "~{~a=~~A~^  ~}" forms)))
-    `(d ,control-string ,@forms)))
+  "Print formatted form=value pairs (usind D).  :/ prints a fresh
+line (aligned)."
+  (with-unique-names (n)
+    `(let ((,n (print-time-stamp)))
+       ,@(mapcar (lambda (form)
+                   (if (eq form :/)
+                       `(progn
+                          (fresh-line *error-output*)
+                          (print-spacer ,n))
+                       `(format *error-output* "~a=~a" ',form ,form)))
+                 forms))))
 
 (defmacro p (form)
   "Print form, then print and return its value.  Only handles a single
