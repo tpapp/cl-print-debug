@@ -1,0 +1,53 @@
+* =print-debug=: a Common Lisp debug library using print statements
+
+=print-debug= is a simple, lightweight Common Lisp library with the purpose of facilitating debugging using print statements.
+
+Common Lisp has excellent debugging and condition facilities, and thus print statements are usually not the best way to go, however, they have their nice.  I wrote up this package when I was working on the low-level memory routines of [[https://github.com/tpapp/lla][LLA]], where a mistake in memory access would occasionally kill the Lisp process, so I could not use anything else but had to rely on printet output.
+
+It is recommended that you do *not* use the =print-debug= package, but rely on its nickname =pide=.
+
+** Available functionality
+
+=pide:d= works like =cl:format=, except for three things:
+
+1. it does not take a first argument, as everything goes to =*error-output*=,
+2. it prints a timestamp first,
+3. a closing newline is appended.
+
+#+BEGIN_SRC lisp
+  (pide:d "what a nice integer: ~d" 42)
+  #+END_SRC
+prints something like
+#+BEGIN_EXAMPLE
+  14:16:48 what a nice integer: 42
+#+END_EXAMPLE
+
+=pide:v= prints form/value pairs, with =:/= introducing line breaks:
+#+BEGIN_SRC lisp
+  (let ((a 1)
+        (b 2))
+    (pide:v a b :/ (+ a b)))
+#+END_SRC
+prints something like
+#+BEGIN_EXAMPLE
+14:26:47 A=1 B=2
+         (+ A B)=3
+#+END_EXAMPLE
+
+=pide:p= prints its argument and
+#+BEGIN_SRC lisp
+  (pide:p (+ 1 2)) ; evaluates to 3
+#+END_SRC
+and prints
+#+BEGIN_EXAMPLE
+  14:23:49 (+ 1 2) =>
+  14:23:49     => 3
+#+END_EXAMPLE
+It also takes an optional label as its second argument.  It should allow wrapping an S-expression without too much source code editing.
+
+Finally, =pide:s= saves the value (using =cl:defparameter=), then returns it:
+#+BEGIN_SRC lisp
+  (let ((v (pide:s *myvar* 1)))
+    (list *myvar* v)) ; evaluates to (1 1)
+#+END_SRC
+It also understands multiple values, just use =(pide:s (values ...) form)=.
