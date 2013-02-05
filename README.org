@@ -34,7 +34,7 @@ prints something like
          (+ A B)=3
 #+END_EXAMPLE
 
-=pide:p= prints its argument and
+=pide:p= prints its argument and its value, also returning the latter:
 #+BEGIN_SRC lisp
   (pide:p (+ 1 2)) ; evaluates to 3
 #+END_SRC
