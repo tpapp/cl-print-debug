@@ -54,7 +54,7 @@
          ,value))))
 
 (defmacro s (variable form)
-  "Save the result of FROM in VARIABLE, then return them.  (:VALUES VAR...) is also recognized,for multiple values."
+  "Save the result of FROM in VARIABLE, then return them.  (VALUES VAR...) is also recognized, for multiple values."
   (if (atom variable)
       (with-unique-names (value)
         (check-type variable symbol)
@@ -64,7 +64,7 @@
       (let* ((variables (cdr variable))
              (values (mapcar (lambda (symbol) (gensym (symbol-name symbol)))
                              variables)))
-        (assert (eq (car variable) :values))
+        (assert (eq (car variable) values))
         `(multiple-value-bind ,values ,form
            ,@(mapcar (lambda (variable value)
                        `(defparameter ,variable ,value))
