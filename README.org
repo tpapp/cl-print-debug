@@ -1,3 +1,5 @@
+*IMPORTANT* This library is [[https://tpapp.github.io/post/orphaned-lisp-libraries/][abandonned]].
+
 * =print-debug=: a Common Lisp debug library using print statements
 
 =print-debug= is a simple, lightweight Common Lisp library with the purpose of facilitating debugging using print statements.
